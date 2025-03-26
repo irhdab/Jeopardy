@@ -1,3 +1,95 @@
+// Add this to your script.js file
+
+// Function to generate a shareable URL with quiz data
+function generateShareableURL() {
+    // Create an object with just the essential quiz data
+    const quizData = {
+        questions: myQuestions.map(q => ({
+            question: q.question,
+            answers: q.answers,
+            correctAnswer: q.correctAnswer
+        }))
+    };
+    
+    // Convert the quiz object to a JSON string
+    const jsonString = JSON.stringify(quizData);
+    
+    // Encode the JSON string for URL safety
+    const encodedData = encodeURIComponent(jsonString);
+    
+    // Create URL with the encoded data as a parameter
+    const shareableURL = `${window.location.origin}${window.location.pathname}?quiz=${encodedData}`;
+    
+    return shareableURL;
+}
+
+// Function to share the quiz (copy to clipboard)
+function shareQuiz() {
+    const url = generateShareableURL();
+    
+    // Check if the URL is too long (browsers have limits)
+    if (url.length > 2000) {
+        alert("This quiz is too large to share via URL. Consider reducing the number of questions.");
+        return;
+    }
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(url)
+        .then(() => {
+            alert("Shareable link copied to clipboard!");
+        })
+        .catch(err => {
+            console.error('Failed to copy: ', err);
+            // Fallback: show the URL for manual copying
+            prompt("Copy this link to share your quiz:", url);
+        });
+}
+
+// Function to load quiz from URL parameters
+function loadQuizFromURL() {
+    const urlParams = new URL(window.location).searchParams;
+    const quizParam = urlParams.get('quiz');
+    
+    if (quizParam) {
+        try {
+            // Decode the URL parameter
+            const jsonString = decodeURIComponent(quizParam);
+            
+            // Parse the JSON data
+            const quizData = JSON.parse(jsonString);
+            
+            // Update the quiz questions
+            if (quizData.questions && quizData.questions.length > 0) {
+                myQuestions = quizData.questions;
+                console.log("Quiz loaded from URL:", myQuestions.length, "questions");
+                
+                // Restart the quiz with the new questions
+                currentQuestion = 0;
+                score = 0;
+                startQuiz();
+                
+                return true;
+            }
+        } catch (error) {
+            console.error("Error loading quiz from URL:", error);
+        }
+    }
+    
+    return false;
+}
+
+// Add event listener for the share button
+document.addEventListener('DOMContentLoaded', function() {
+    const shareButton = document.getElementById('share-quiz');
+    if (shareButton) {
+        shareButton.addEventListener('click', shareQuiz);
+    }
+    
+    // Try to load quiz from URL when page loads
+    loadQuizFromURL();
+});
+
+
 // Wrap all code in DOMContentLoaded to ensure elements are loaded
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded');
