@@ -14,6 +14,46 @@
     --hover-color: #f0f0f0;
 }
 
+.edit-btn, .delete-btn {
+    padding: 5px 10px;
+    margin-left: 10px;
+    font-size: 0.8rem;
+    border-radius: 4px;
+}
+
+.edit-btn {
+    background-color: var(--primary-color);
+}
+
+.delete-btn {
+    background-color: #dc3545;
+}
+
+.question-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.question-text {
+    flex-grow: 1;
+}
+
+.question-actions {
+    display: flex;
+    gap: 5px;
+}
+
+#update-question {
+    background-color: #28a745;
+}
+
+#cancel-edit {
+    background-color: #6c757d;
+}
+
+
 [data-theme="dark"] {
     /* Dark theme */
     --background-color: #121212;
