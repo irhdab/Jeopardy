@@ -4,15 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Application</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="quiz-container">
+    <div class="header">
+        <div class="title">Quiz App</div>
+        <div class="theme-switch-container">
+            <span class="theme-icon">☀️</span>
+            <label class="theme-switch">
+                <input type="checkbox" id="theme-toggle">
+                <span class="slider"></span>
+            </label>
+            <span class="theme-icon">🌙</span>
+        </div>
+    </div>
+
+    <div class="tab-container">
+        <div class="tab-buttons">
+            <button class="tab-button active" id="take-quiz-tab">Take Quiz</button>
+            <button class="tab-button" id="create-quiz-tab">Create Quiz</button>
+        </div>
+    </div>
+
+    <div class="quiz-container" id="quiz-section">
         <div id="quiz"></div>
-        <button id="submit">Submit</button>
-        <button id="next" class="hide">Next Question</button>
+        <div class="btn-container">
+            <button id="submit">Submit</button>
+            <button id="next" class="hide">Next Question</button>
+        </div>
         <div id="results" class="hide"></div>
     </div>
+
+    <div id="creator-panel">
+        <h2>Create Your Quiz</h2>
+        <div id="question-form">
+            <div class="form-group">
+                <label for="question-text">Question:</label>
+                <textarea id="question-text" rows="2" placeholder="Enter your question here"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Answer Options:</label>
+                <div id="answer-options">
+                    <div class="answer-option">
+                        <input type="text" placeholder="Option A" class="option-text">
+                        <input type="radio" name="correct-answer" value="a">
+                    </div>
+                    <div class="answer-option">
+                        <input type="text" placeholder="Option B" class="option-text">
+                        <input type="radio" name="correct-answer" value="b">
+                    </div>
+                    <div class="answer-option">
+                        <input type="text" placeholder="Option C" class="option-text">
+                        <input type="radio" name="correct-answer" value="c">
+                    </div>
+                    <div class="answer-option">
+                        <input type="text" placeholder="Option D" class="option-text">
+                        <input type="radio" name="correct-answer" value="d">
+                    </div>
+                </div>
+            </div>
+            <div class="nav-buttons">
+                <button id="add-question">Add Question</button>
+                <button id="save-quiz">Save Quiz</button>
+            </div>
+        </div>
+        <div id="question-list"></div>
+    </div>
+
+    <div class="footer">
+        &copy; 2025 Quiz Application
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
