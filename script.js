@@ -1,3 +1,196 @@
+// Add these variables to track edit state
+let currentEditIndex = null;
+let isEditMode = false;
+
+// Modify the addQuestion function to handle edit mode
+function addQuestion() {
+    const question = questionText.value.trim();
+    if (!question) {
+        alert('Please enter a question!');
+        return;
+    }
+    
+    const answerOptions = document.querySelectorAll('.option-text');
+    const answers = {};
+    let allOptionsValid = true;
+    
+    answerOptions.forEach((option, index) => {
+        const letter = String.fromCharCode(97 + index); // a, b, c, d
+        const text = option.value.trim();
+        if (!text) {
+            allOptionsValid = false;
+        }
+        answers[letter] = text;
+    });
+    
+    if (!allOptionsValid) {
+        alert('Please fill in all answer options!');
+        return;
+    }
+    
+    const correctAnswer = document.querySelector('input[name="correct-answer"]:checked');
+    if (!correctAnswer) {
+        alert('Please select a correct answer!');
+        return;
+    }
+    
+    // If in edit mode, update existing question
+    if (isEditMode && currentEditIndex !== null) {
+        userQuestions[currentEditIndex] = {
+            question: question,
+            answers: answers,
+            correctAnswer: correctAnswer.value
+        };
+        
+        // Exit edit mode
+        exitEditMode();
+        alert('Question updated!');
+    } else {
+        // Add new question to array
+        userQuestions.push({
+            question: question,
+            answers: answers,
+            correctAnswer: correctAnswer.value
+        });
+        
+        alert('Question added!');
+    }
+    
+    // Clear form
+    clearQuestionForm();
+    
+    // Update question list
+    updateQuestionList();
+}
+
+// Create a function to enter edit mode
+function editQuestion(index) {
+    if (index < 0 || index >= userQuestions.length) {
+        return;
+    }
+    
+    // Enter edit mode
+    isEditMode = true;
+    currentEditIndex = index;
+    
+    // Get the question to edit
+    const questionToEdit = userQuestions[index];
+    
+    // Populate the form with question data
+    questionText.value = questionToEdit.question;
+    
+    // Set the answer options
+    const answerOptions = document.querySelectorAll('.option-text');
+    for (let i = 0; i < answerOptions.length; i++) {
+        const letter = String.fromCharCode(97 + i); // a, b, c, d
+        if (questionToEdit.answers[letter]) {
+            answerOptions[i].value = questionToEdit.answers[letter];
+        }
+    }
+    
+    // Select the correct answer
+    const correctRadio = document.querySelector(`input[name="correct-answer"][value="${questionToEdit.correctAnswer}"]`);
+    if (correctRadio) {
+        correctRadio.checked = true;
+    }
+    
+    // Update UI to show edit mode
+    document.getElementById('add-question').classList.add('hide');
+    document.getElementById('update-question').classList.remove('hide');
+    document.getElementById('cancel-edit').classList.remove('hide');
+    
+    // Scroll to form
+    document.getElementById('question-form').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Create a function to exit edit mode
+function exitEditMode() {
+    isEditMode = false;
+    currentEditIndex = null;
+    
+    // Clear the form
+    clearQuestionForm();
+    
+    // Update UI to hide edit mode buttons
+    document.getElementById('add-question').classList.remove('hide');
+    document.getElementById('update-question').classList.add('hide');
+    document.getElementById('cancel-edit').classList.add('hide');
+}
+
+// Function to clear the question form
+function clearQuestionForm() {
+    questionText.value = '';
+    document.querySelectorAll('.option-text').forEach(option => {
+        option.value = '';
+    });
+    document.querySelectorAll('input[name="correct-answer"]').forEach(radio => {
+        radio.checked = false;
+    });
+}
+
+// Delete a question
+function deleteQuestion(index) {
+    if (confirm('Are you sure you want to delete this question?')) {
+        userQuestions.splice(index, 1);
+        updateQuestionList();
+    }
+}
+
+// Modify the updateQuestionList function to include edit buttons
+function updateQuestionList() {
+    if (userQuestions.length === 0) {
+        questionList.innerHTML = '<p>No questions added yet.</p>';
+        return;
+    }
+    
+    let output = '<h3>Your Questions:</h3>';
+    userQuestions.forEach((q, index) => {
+        output += `
+            <div class="question-list-item">
+                <span class="question-text">${index + 1}. ${q.question}</span>
+                <div class="question-actions">
+                    <button class="edit-btn" onclick="editQuestion(${index})">Edit</button>
+                    <button class="delete-btn" onclick="deleteQuestion(${index})">Delete</button>
+                </div>
+            </div>
+        `;
+    });
+    
+    questionList.innerHTML = output;
+}
+
+// Add event listeners for the new buttons
+document.getElementById('update-question').addEventListener('click', addQuestion);  // Reuse addQuestion for updates
+document.getElementById('cancel-edit').addEventListener('click', exitEditMode);
+
+// Modify the saveQuiz function to exit edit mode
+function saveQuiz() {
+    if (userQuestions.length === 0) {
+        alert('Please add at least one question!');
+        return;
+    }
+    
+    // Exit edit mode if active
+    if (isEditMode) {
+        exitEditMode();
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('customQuestions', JSON.stringify(userQuestions));
+    
+    // Update quiz questions
+    myQuestions = [...userQuestions];
+    
+    alert('Quiz saved successfully! Switch to "Take Quiz" tab to try it out.');
+    
+    // Reset for new quiz creation
+    userQuestions = [];
+    updateQuestionList();
+}
+
+
+
+
 // Theme toggle functionality
 const themeToggle = document.getElementById('theme-toggle');
 
